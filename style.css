@@ -1,0 +1,80 @@
+/* Set the background color to the Background and Surface color */
+body {
+  background-color: #222222;
+  /* Use flexbox to center the elements on the page */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+#dataGrid {
+  border-collapse: collapse;
+  width: 75%;
+}
+
+#dataGrid td,
+#dataGrid th {
+  border: 2px solid #FAF7FF;
+  padding: 8px;
+}
+
+#dataGrid tr:nth-child(odd) {
+  background-color: #FAF7FF;
+}
+#dataGrid tr:nth-child(even) {
+  background-color: #FAF7FF;
+}
+
+#dataGrid tr:hover {
+  background-color: #8685EF;
+}
+
+#dataGrid th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #383645;
+  color: #FAF7FF;
+}
+
+/* Add a hover effect to the table rows */
+tr:hover {
+  background-color: #8685EF;
+}
+
+/* Hide the default file input */
+#fileInput {
+  display: none;
+}
+
+/* Set the background color to the Primary color and use less sharp edges */
+button,
+.custom-file-input {
+  font-size: 18px;
+  background-color: #383645;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: 0; /* Remove the border */
+  border-radius: 10px; /* Rounded borders */
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Add a hover effect to the buttons */
+button:hover,
+.custom-file-input:hover {
+  /* Set the background color to the Secondary color */
+  background-color: #8685EF;
+  color: #FAF7FF;
+  cursor: pointer;
+}

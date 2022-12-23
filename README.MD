@@ -12,7 +12,7 @@ EmpID, ProjectID, DateFrom, DateTo
 The expected output would be:
 Employee#1, Employee#2, DaysWorkedTogether 
 
-Specific requirements
-1) DateTo can be NULL, equivalent to today
-2) The input data must be loaded to the program from a CSV file
-3) Outputs the results to a web console
+How to use?
+1) Use the link provided below the about me section.
+2) Upload any CSV file with the format mentioned above.
+3) Click upload, 

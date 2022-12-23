@@ -2,10 +2,14 @@
 <html>
   <head>
     <title>Employee Overlap</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <input type="file" id="fileInput" />
-    <button id="submitButton">Submit</button>
+    <div class="container">
+      <label for="fileInput" class="custom-file-input">Select a file</label>
+      <input type="file" id="fileInput" placeholder="Select a file" />
+      <button id="submitButton">Upload</button>
+    </div>
     <br />
     <table id="dataGrid">
       <tr>
@@ -16,5 +20,5 @@
       </tr>
     </table>
     <script src="main.js"></script>
-  </body>
+  </body>  
 </html>
