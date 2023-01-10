@@ -10,7 +10,7 @@ EmpID, ProjectID, DateFrom, DateTo
 ```
 
 The expected output would be:
-Employee#1, Employee#2, DaysWorkedTogether 
+Employee#1, Employee#2, ProjectID, DaysWorkedTogether 
 
 How to use?
 1) Use the link provided below the about me section.

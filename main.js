@@ -1,94 +1,197 @@
-/*
-  * The Project class is a container for the start and end dates of a project.
-  * @param start - The start date of the project.
-  * @param end - The end date of the project. 
-  * @returns An object with the following properties: 
-  * - start: The start date of the project.
-  * - end: The end date of the project.
-  * @example
-  * const project = new Project(new Date(2020, 0, 1), new Date(2020, 0, 31));
-  * console.log(project.start); // 2020-01-01T00:00:00.000Z
-  */
-class Project {
-  constructor(start, end) {
-    this.start = start;
-    this.end = end;
-  }
-}
-
 /**
-  * The Overlap class is a container for the number of days two employees
-  * are working on the same project.
-  * @param days - The number of days of overlap between the two projects.
-  * @param empId - The employee ID of the first employee.
-  * @param otherEmpId - The employee ID of the second employee.
-  * @param projectId - The project ID of the overlap.
-  * @returns An object with the following properties:
-  * - days: The number of days of overlap between the two projects.
-  * - empId: The employee ID of the first employee.
-  * - otherEmpId: The employee ID of the second employee.
-  * - projectId: The project ID of the overlap.
-  * @example
-  * const overlap = new Overlap(31, 1, 2, 3);
-  * console.log(overlap.days); // 31
-  */ 
-class Overlap {
-  constructor(days, empId, otherEmpId, projectId) {
-    this.days = days;
-    this.empId = empId;
-    this.otherEmpId = otherEmpId;
-    this.projectId = projectId;
-  }
-}
-
-/**
- * The getOverlap function returns the longest overlap between two employees.
- * @param projects1 - An object containing the projects of the first employee.
- * @param projects2 - An object containing the projects of the second employee.
- * @returns An object with the following properties:
- * - days: The number of days of overlap between the two projects.
- * - empId: The employee ID of the first employee.
- * - otherEmpId: The employee ID of the second employee.
- * - projectId: The project ID of the overlap.
+ * The Employee class is a blueprint for creating objects that store employee information.
+ * @param employeeId - The employee's ID
+ * @param projectId - The project's ID
+ * @param dateFrom - The date the employee started working on the project
+ * @param dateTo - The date the employee stopped working on the project
  * @example
- * const projects1 = {
- * 1: new Project(new Date(2020, 0, 1), new Date(2020, 0, 31)),
- * 2: new Project(new Date(2020, 1, 1), new Date(2020, 1, 28)),
- * 3: new Project(new Date(2020, 2, 1), new Date(2020, 2, 31))
- * };
- * const projects2 = {
- * 1: new Project(new Date(2020, 0, 15), new Date(2020, 0, 31)),
- * 2: new Project(new Date(2020, 1, 1), new Date(2020, 1, 15)),
- * 4: new Project(new Date(2020, 2, 1), new Date(2020, 2, 31))
- * };
- * const overlap = getOverlap(projects1, projects2);
- * console.log(overlap.days); // 17
- * console.log(overlap.empId); // 0
- * console.log(overlap.otherEmpId); // 0
- * console.log(overlap.projectId); // 1
+ * const employee = new Employee(1, 1, '2019-01-01', '2019-01-31');
  */
-function getOverlap(projects1, projects2) {
-  let longestOverlap = new Overlap(0, 0, 0, 0);
+class Employee {
+  constructor(employeeId, projectId, dateFrom, dateTo) {
+    this.employeeId = employeeId;
+    this.projectId = projectId;
+    this.dateFrom = dateFrom;
+    this.dateTo = dateTo;
+  }
+}
 
-  for (const projectId in projects1) {
-    if (projectId in projects2) {
-      const start =
-        projects1[projectId].start > projects2[projectId].start
-          ? projects1[projectId].start
-          : projects2[projectId].start;
-      const end =
-        projects1[projectId].end < projects2[projectId].end
-          ? projects1[projectId].end
-          : projects2[projectId].end;
-      const days = (end - start) / (1000 * 60 * 60 * 24) + 1;
+/**
+ * Calculate the number of days that two employees have overlapped on a project.
+ * @param employee1 - an object with the following properties: (employeeId, projectId, dateFrom, dateTo)
+ * @param employee2 - an object with the following properties: (employeeId, projectId, dateFrom, dateTo)
+ * @returns The number of days that the two employees have overlapped on a project.
+ * @example
+ * getOverlappingTime(
+ *  {employeeId: 1, projectId: 1, dateFrom: '2019-01-01', dateTo: '2019-01-31'},
+ */
+function getOverlappingTime(employee1, employee2) {
+  const dateFrom1 = new Date(employee1.dateFrom);
+  const dateTo1 = employee1.dateTo ? new Date(employee1.dateTo) : new Date();
+  const dateFrom2 = new Date(employee2.dateFrom);
+  const dateTo2 = employee2.dateTo ? new Date(employee2.dateTo) : new Date();
+  
+  let overlappingTime = 0;
+  if (dateFrom1 < dateTo2 && dateFrom2 < dateTo1) {
+    overlappingTime =
+      Math.min(dateTo1, dateTo2) - Math.max(dateFrom1, dateFrom2);
+  }
+  return overlappingTime / (24 * 60 * 60 * 1000);
+}
 
-      if (days > longestOverlap.days) {
-        longestOverlap = new Overlap(days, 0, 0, projectId);
+/**
+ * Get all the pairs of employees who have worked together.
+ * @param employees - an array of objects, each object has the following properties:
+ * @returns An array of arrays, each containing two objects. Each object has the following properties:
+ * (employeeId, projectId, dateFrom, dateTo)
+ */
+function getPairs(employees) {
+  const pairs = [];
+  for (let i = 0; i < employees.length; i++) {
+    for (let j = i + 1; j < employees.length; j++) {
+      if (
+        employees[i].employeeId !== employees[j].employeeId &&
+        employees[i].projectId === employees[j].projectId
+      ) {
+        pairs.push([employees[i], employees[j]]);
       }
     }
   }
+  return pairs;
+}
 
-  return longestOverlap;
+/**
+ * Get the results for the pairs of employees who have worked together.
+ * @param pairs - an array of arrays, each containing two objects. Each object has the following properties:
+ * (employeeId, projectId, dateFrom, dateTo)
+ * @returns An array of objects, each object has the following properties:
+ * (employee1, employee2, project, overlappingTime)
+ */
+function getResults(pairs) {
+  const results = [];
+  for (const pair of pairs) {
+    const overlappingTime = getOverlappingTime(pair[0], pair[1]);
+    if (overlappingTime > 0) {
+      results.push({
+        employee1: pair[0].employeeId,
+        employee2: pair[1].employeeId,
+        project: pair[0].projectId,
+        overlappingTime: overlappingTime,
+      });
+    }
+  }
+  return results;
+}
+
+/**
+ * Filter the results to only include unique pairs with the highest overlapping time.
+ * @param results - an array of objects, each object has the following properties:
+ * (employee1, employee2, project, overlappingTime)
+ * @returns An array of objects, each object has the following properties:
+ * (employee1, employee2, project, overlappingTime)
+ */             
+function filterResults(results) {
+  const filteredResults = [];
+  for (const result of results) {
+    const existingResult = filteredResults.find(
+      (r) =>
+        r.employee1 === result.employee1 &&
+        r.employee2 === result.employee2 &&
+        r.project === result.project
+    );
+    if (
+      !existingResult ||
+      existingResult.overlappingTime < result.overlappingTime
+    ) {
+      filteredResults.push(result);
+    }
+  }
+  return filteredResults;
+}
+
+/**
+ * The function takes a CSV file as input, parses the data into an array of Employee objects, gets the
+ * pairs of employees who have worked together, gets the results for the pairs, filters the results to
+ * only include unique pairs with the highest overlapping time, sorts the filtered results by
+ * overlapping time in descending order, and prints the filtered results.
+ * @param file - The file to process
+ */
+function processFile(file) {
+  const reader = new FileReader();
+  reader.readAsText(file);
+  reader.onload = function() {
+    // Parse the CSV data into an array of Employee objects
+    const rows = reader.result.split('\n').slice(1);
+    const employees = [];
+    for (const row of rows) {
+      const fields = row.split(',');
+      if (fields.length !== 4) {
+        console.error(`Invalid row: ${row}`);
+        continue;
+      }
+      const employee = new Employee(fields[0], fields[1], fields[2], fields[3]);
+      employees.push(employee);
+    }
+
+    // Get the pairs of employees who have worked together
+    const pairs = getPairs(employees);
+
+    // Get the results for the pairs
+    const results = getResults(pairs);
+
+    // Filter the results to only include unique pairs with the highest overlapping time
+    const filteredResults = filterResults(results);
+
+    // Sort the filtered results by overlapping time in descending order
+    filteredResults.sort((a, b) => b.overlappingTime - a.overlappingTime);
+
+    // Print the filtered results
+    for (const result of filteredResults) {
+      // console.log(`${result.employee1},${result.employee2},${result.project},${result.overlappingTime}`);
+      // Update the data grid with the longest overlap
+      updateDataGrid(
+        result.employee1,
+        result.employee2,
+        result.project,
+        Math.round(result.overlappingTime)
+      );
+    }
+  };
+  reader.onerror = function() {
+    console.error(reader.error);
+  };
+}
+
+
+/**
+ * It creates a new row, adds four cells to it, and then adds the row to the table.
+ * @param empId1 - The employee ID of the first employee.
+ * @param empId2 - The employee ID of the employee who is being assigned to the project.
+ * @param projectId - The project ID.
+ * @param days - number of days worked on the project
+ * @example
+ * addRowToDataGrid(1, 2, 3, 31);
+ */
+function addRowToDataGrid(empId1, empId2, projectId, days) {
+  const dataGrid = document.getElementById("dataGrid");
+
+  const row = document.createElement("tr");
+  const cell1 = document.createElement("td");
+  const cell2 = document.createElement("td");
+  const cell3 = document.createElement("td");
+  const cell4 = document.createElement("td");
+
+  cell1.innerHTML = empId1;
+  cell2.innerHTML = empId2;
+  cell3.innerHTML = projectId;
+  cell4.innerHTML = days;
+
+  row.appendChild(cell1);
+  row.appendChild(cell2);
+  row.appendChild(cell3);
+  row.appendChild(cell4);
+
+  dataGrid.appendChild(row);
 }
 
 /**
@@ -107,43 +210,21 @@ function getOverlap(projects1, projects2) {
  */
 function updateDataGrid(empId1, empId2, projectId, days) {
   const dataGrid = document.getElementById("dataGrid");
+  const rows = new Map();
 
-  // Check if a row with the same employee IDs and project ID already exists
-  let rowExists = false;
+  // Add each row to the Map
   for (let i = 0; i < dataGrid.rows.length; i++) {
     const row = dataGrid.rows[i];
-    if (
-      row.cells[0].textContent === empId1 &&
-      row.cells[1].textContent === empId2 &&
-      row.cells[2].textContent === projectId
-    ) {
-      rowExists = true;
-      break;
-    }
+    const key = `${row.cells[0].innerHTML}-${row.cells[1].innerHTML}-${row.cells[2].innerHTML}`;
+    rows.set(key, row);
   }
 
-  // If the row does not already exist, add it
-  if (!rowExists) {
-    const row = document.createElement("tr");
-    const cell1 = document.createElement("td");
-    cell1.textContent = empId1;
-    const cell2 = document.createElement("td");
-    cell2.textContent = empId2;
-    const cell3 = document.createElement("td");
-    cell3.textContent = projectId;
-    const cell4 = document.createElement("td");
-    cell4.textContent = days;
-    row.appendChild(cell1);
-    row.appendChild(cell2);
-    row.appendChild(cell3);
-    row.appendChild(cell4);
-    dataGrid.appendChild(row);
+  // Check if a row with the same employee IDs and project ID already exists
+  const key = `${empId1}-${empId2}-${projectId}`;
+  if (!rows.has(key)) {
+    addRowToDataGrid(empId1, empId2, projectId, days);
   }
 }
-
-// results is an object containing the longest overlap between two employees
-const results = {};
-
 
 // Get the file input element
 const fileInput = document.getElementById("fileInput");
@@ -163,75 +244,5 @@ const submitButton = document.getElementById("submitButton");
 submitButton.addEventListener("click", function () {
   const fileInput = document.getElementById("fileInput");
   const file = fileInput.files[0];
-
-  // If a file was selected, read the file
-  const reader = new FileReader();
-  reader.readAsText(file);
-  reader.onload = function () {
-    const csvData = reader.result;
-
-    const rows = csvData.split("\n").slice(1);
-
-    /**
-     * For each row in the CSV file, create a Project object and add it to the results object.
-     * If the employee ID and project ID already exist in the results object, update the start
-     * and end dates of the Project object.
-     */
-    rows.forEach((row) => {
-      const [empId, projectId, startDate, endDate] = row.split(",");
-      const start = new Date(startDate);
-      const end = endDate ? new Date(endDate) : new Date();
-
-      if (!results[empId]) {
-        results[empId] = {};
-      }
-
-      if (!results[empId][projectId]) {
-        results[empId][projectId] = new Project(start, end);
-      } else {
-        results[empId][projectId].start =
-          start < results[empId][projectId].start
-            ? start
-            : results[empId][projectId].start;
-        results[empId][projectId].end =
-          end > results[empId][projectId].end
-            ? end
-            : results[empId][projectId].end;
-      }
-    });
-
-    let longestOverlap = new Overlap(0, 0, 0);
-
-    /**
-     * For each employee ID in the results object, compare the employee's projects with the
-     * projects of every other employee. If the overlap is longer than the current longest
-     * overlap, update the longest overlap.
-     * After comparing the employee's projects with every other employee's projects, mark the
-     * employee as visited and update the data grid with the longest overlap.
-     */
-    for (const empId in results) {
-      for (const otherEmpId in results) {
-        if (empId !== otherEmpId && !results[otherEmpId].visited) {
-          const overlap = getOverlap(results[empId], results[otherEmpId]);
-
-          if (overlap.days > longestOverlap.days) {
-            longestOverlap = overlap;
-            longestOverlap.empId = empId;
-            longestOverlap.otherEmpId = otherEmpId;
-          }
-        }
-      }
-
-      // Mark the employee as visited
-      results[empId].visited = true;
-
-      // Update the data grid with the longest overlap
-      updateDataGrid(
-        longestOverlap.otherEmpId,
-        longestOverlap.empId,
-        longestOverlap.projectId,
-        Math.round(longestOverlap.days)
-      );
-    }
-  };
+  processFile(file);
 });
